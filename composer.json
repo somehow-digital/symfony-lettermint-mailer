@@ -1,0 +1,49 @@
+{
+	"name": "somehow-digital/symfony-lettermint-mailer",
+	"type": "symfony-mailer-bridge",
+	"description": "Symfony Lettermint Mailer Bridge",
+	"keywords": ["symfony", "mailer", "bridge", "lettermint", "email", "api"],
+	"homepage": "https://somehow.digital/",
+	"license": "MIT",
+	"authors": [
+		{
+			"name": "Thomas Deinhamer",
+			"email": "code@thasmo.dev"
+		}
+	],
+	"minimum-stability": "dev",
+	"prefer-stable": true,
+	"require": {
+		"php": ">=8.2",
+		"symfony/mailer": "^7.4.0|^8.0.0"
+	},
+	"require-dev": {
+		"symfony/http-client": "^7.4.1|^8.0.1",
+		"symfony/webhook": "^7.4.0|^8.0.0",
+		"pestphp/pest": "^4.2.0",
+		"mockery/mockery": "^1.6.12",
+		"symfony/dotenv": "^7.4.0|^8.0.0",
+		"symplify/easy-coding-standard": "^13.0.0",
+		"phpstan/phpstan": "^2.1",
+		"phpstan/phpstan-mockery": "^2.0"
+	},
+	"autoload": {
+		"psr-4": { "SomehowDigital\\Symfony\\Component\\Mailer\\Bridge\\Lettermint\\": "" },
+		"exclude-from-classmap": [
+			"/tests/"
+		]
+	},
+	"config": {
+		"allow-plugins": {
+			"pestphp/pest-plugin": true
+		}
+	},
+	"scripts": {
+		"test": "pest",
+		"test:unit": "pest --filter=Unit",
+		"test:integration": "pest --filter=Integration",
+		"analyze": "phpstan analyse",
+		"lint": "ecs check --ansi",
+		"fix": "ecs check --ansi --fix"
+	}
+}
