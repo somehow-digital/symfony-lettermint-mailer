@@ -14,15 +14,18 @@ use Symfony\Contracts\HttpClient\Exception\TransportExceptionInterface;
 use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Symfony\Contracts\HttpClient\ResponseInterface;
 
+beforeEach(function () {
+	$this->client = \Mockery::mock(HttpClientInterface::class);
+	$this->response = \Mockery::mock(ResponseInterface::class);
+	$this->response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
+	$this->transport = new LettermintApiTransport('token', null, $this->client);
+});
+
 afterEach(function () {
 	\Mockery::close();
 });
 
 it('sends an email via API and sets the message id', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
-
 	$email = (new Email())
 		->subject('Hello')
 		->from(new Address('from@example.com', 'From'))
@@ -35,7 +38,7 @@ it('sends an email via API and sets the message id', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client
+	$this->client
 		->shouldReceive('request')
 		->once()
 		->withArgs(function (string $method, string $url, array $options) {
@@ -60,22 +63,17 @@ it('sends an email via API and sets the message id', function () {
 
 			return true;
 		})
-		->andReturn($response);
+		->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(202);
-	$response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_123']);
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(202);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_123']);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-	$sentMessage = $transport->send($email, $envelope);
+	$sentMessage = $this->transport->send($email, $envelope);
 
 	expect($sentMessage->getMessageId())->toBe('msg_123');
 });
 
 it('includes reply-to, cc, bcc and custom headers in the payload', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
-
 	$email = (new Email())
 		->subject('Hello')
 		->from('from@example.com')
@@ -89,7 +87,7 @@ it('includes reply-to, cc, bcc and custom headers in the payload', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client
+	$this->client
 		->shouldReceive('request')
 		->once()
 		->withArgs(function (string $method, string $url, array $options) {
@@ -108,22 +106,17 @@ it('includes reply-to, cc, bcc and custom headers in the payload', function () {
 
 			return true;
 		})
-		->andReturn($response);
+		->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(202);
-	$response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_abc']);
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(202);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_abc']);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-	$sentMessage = $transport->send($email, $envelope);
+	$sentMessage = $this->transport->send($email, $envelope);
 
 	expect($sentMessage->getMessageId())->toBe('msg_abc');
 });
 
 it('includes attachments in the payload', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
-
 	$email = (new Email())
 		->subject('Hello')
 		->from('from@example.com')
@@ -133,7 +126,7 @@ it('includes attachments in the payload', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client
+	$this->client
 		->shouldReceive('request')
 		->once()
 		->withArgs(function (string $method, string $url, array $options) {
@@ -147,20 +140,15 @@ it('includes attachments in the payload', function () {
 
 			return true;
 		})
-		->andReturn($response);
+		->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(202);
-	$response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_att']);
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(202);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_att']);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 });
 
 it('includes route in the payload', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
-
 	$email = (new Email())
 		->subject('Hello')
 		->from('from@example.com')
@@ -171,7 +159,7 @@ it('includes route in the payload', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client
+	$this->client
 		->shouldReceive('request')
 		->once()
 		->withArgs(function (string $method, string $url, array $options) {
@@ -180,20 +168,15 @@ it('includes route in the payload', function () {
 
 			return true;
 		})
-		->andReturn($response);
+		->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(202);
-	$response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_route']);
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(202);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andReturn(['message_id' => 'msg_route']);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 });
 
 it('throws an exception when the API responds with a non-202 status code', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
-
 	$email = (new Email())
 		->subject('Hello')
 		->from('from@example.com')
@@ -202,21 +185,16 @@ it('throws an exception when the API responds with a non-202 status code', funct
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client->shouldReceive('request')->once()->andReturn($response);
+	$this->client->shouldReceive('request')->once()->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(400);
-	$response->shouldReceive('toArray')->once()->with(false)->andReturn([]);
-	$response->shouldReceive('getContent')->once()->with(false)->andReturn('bad request');
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(400);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andReturn([]);
+	$this->response->shouldReceive('getContent')->once()->with(false)->andReturn('bad request');
 
-	$transport = new LettermintApiTransport('token', null, $client);
-
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 })->throws(HttpTransportException::class);
 
 it('throws an exception when the API response cannot be decoded', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
 	$decodingException = new class('decoding error') extends \Exception implements DecodingExceptionInterface {};
 
 	$email = (new Email())
@@ -227,20 +205,15 @@ it('throws an exception when the API response cannot be decoded', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client->shouldReceive('request')->once()->andReturn($response);
+	$this->client->shouldReceive('request')->once()->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andReturn(202);
-	$response->shouldReceive('toArray')->once()->with(false)->andThrow($decodingException);
+	$this->response->shouldReceive('getStatusCode')->once()->andReturn(202);
+	$this->response->shouldReceive('toArray')->once()->with(false)->andThrow($decodingException);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 })->throws(HttpTransportException::class);
 
 it('throws an exception when the Lettermint server cannot be reached', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$response = \Mockery::mock(ResponseInterface::class);
-	$response->shouldReceive('getInfo')->with('debug')->andReturn(null)->byDefault();
 	$transportException = new class('transport error') extends \Exception implements TransportExceptionInterface {};
 
 	$email = (new Email())
@@ -251,18 +224,15 @@ it('throws an exception when the Lettermint server cannot be reached', function 
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$client->shouldReceive('request')->once()->andReturn($response);
+	$this->client->shouldReceive('request')->once()->andReturn($this->response);
 
-	$response->shouldReceive('getStatusCode')->once()->andThrow($transportException);
+	$this->response->shouldReceive('getStatusCode')->once()->andThrow($transportException);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 })->throws(HttpTransportException::class);
 
 it('throws when multiple tags are set', function () {
-	$client = \Mockery::mock(HttpClientInterface::class);
-	$client->shouldNotReceive('request');
+	$this->client->shouldNotReceive('request');
 
 	$email = (new Email())
 		->subject('Hello')
@@ -275,7 +245,5 @@ it('throws when multiple tags are set', function () {
 
 	$envelope = new Envelope(new Address('from@example.com'), [new Address('to@example.com')]);
 
-	$transport = new LettermintApiTransport('token', null, $client);
-
-	$transport->send($email, $envelope);
+	$this->transport->send($email, $envelope);
 })->throws(TransportException::class);

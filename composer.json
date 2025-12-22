@@ -22,7 +22,6 @@
 		"symfony/webhook": "^7.4.0 || ^8.0.0",
 		"pestphp/pest": "^3.8.4 || ^4.2.0",
 		"mockery/mockery": "^1.6.12",
-		"symfony/dotenv": "^7.4.0 || ^8.0.0",
 		"symplify/easy-coding-standard": "^13.0.0",
 		"phpstan/phpstan": "^2.1",
 		"phpstan/phpstan-mockery": "^2.0"
@@ -40,8 +39,6 @@
 	},
 	"scripts": {
 		"test": "pest",
-		"test:unit": "pest --filter=Unit",
-		"test:integration": "pest --filter=Integration",
 		"analyze": "phpstan analyse",
 		"lint": "ecs check --ansi",
 		"fix": "ecs check --ansi --fix"
