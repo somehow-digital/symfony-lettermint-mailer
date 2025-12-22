@@ -15,14 +15,14 @@
 	"prefer-stable": true,
 	"require": {
 		"php": ">=8.2",
-		"symfony/mailer": "^7.4.0|^8.0.0"
+		"symfony/mailer": "^7.4.0 || ^8.0.0"
 	},
 	"require-dev": {
-		"symfony/http-client": "^7.4.1|^8.0.1",
-		"symfony/webhook": "^7.4.0|^8.0.0",
-		"pestphp/pest": "^4.2.0",
+		"symfony/http-client": "^7.4.1 || ^8.0.1",
+		"symfony/webhook": "^7.4.0 || ^8.0.0",
+		"pestphp/pest": "^3.8.4 || ^4.2.0",
 		"mockery/mockery": "^1.6.12",
-		"symfony/dotenv": "^7.4.0|^8.0.0",
+		"symfony/dotenv": "^7.4.0 || ^8.0.0",
 		"symplify/easy-coding-standard": "^13.0.0",
 		"phpstan/phpstan": "^2.1",
 		"phpstan/phpstan-mockery": "^2.0"
