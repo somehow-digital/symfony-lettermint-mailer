@@ -102,7 +102,9 @@ final class LettermintApiTransport extends AbstractApiTransport
 				continue;
 			}
 
-			$payload['headers'][$header->getName()] = $header->getBodyAsString();
+			if ($body = $header->getBodyAsString()) {
+				$payload['headers'][$header->getName()] = $body;
+			}
 		}
 
 		return $payload;
