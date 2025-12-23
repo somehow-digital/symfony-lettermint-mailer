@@ -83,6 +83,10 @@ final class LettermintApiTransport extends AbstractApiTransport
 		}
 
 		foreach ($email->getHeaders()->all() as $header) {
+			if (in_array($header->getName(), ['subject', 'sender', 'from', 'to', 'cc', 'bcc', 'reply-to'])) {
+				continue;
+			}
+
 			if ($header instanceof TagHeader) {
 				if (isset($payload['tag'])) {
 					throw new TransportException('Lettermint only allows a single tag per email.');
