@@ -125,7 +125,7 @@ final class LettermintApiTransport extends AbstractApiTransport
 
 			$file = [
 				'filename' => $filename,
-				'content' => $attachment->bodyToString(),
+				'content' => base64_encode($attachment->getBody()),
 			];
 
 			if ($disposition === 'inline') {
