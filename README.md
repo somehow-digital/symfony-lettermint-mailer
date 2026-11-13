@@ -52,3 +52,7 @@ class LettermintMailEventConsumer implements ConsumerInterface
     }
 }
 ```
+
+---
+
+[`somehow.digital`](https://somehow.digital/)
